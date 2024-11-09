@@ -316,12 +316,40 @@ function weather() {
 }
 
 
+//ցուցադրում է հղումը ջնջելու կոճակը
+function showRemoveLink() {
+
+	var remTimeout;
+
+	//մենք օգտագործում ենք document.load-ից հետո ավելացված dom-ի համար
+	$(".linkblocks").on("mouseenter", ".block a", function(e) {
+
+		remTimeout = setTimeout(function() {
+			//console.log(e.currentTarget.children[2])
+			e.currentTarget.children[2].setAttribute("style", "display: block")
+		}, 500)
+	})
+
+	$(".linkblocks").on("mouseleave", ".block a", function(e) {
+
+		clearTimeout(remTimeout)
+		e.currentTarget.children[2].setAttribute("style", "display: none");
+	});
+}
+
+
+//ցուցադրման կարգավորումներ (ժամանակավոր)
 $(".showSettings button").click(function() {
 	$(".settings").toggle();
 });
 
 
+
+
+
 $(document).ready(function() {
+
+	showRemoveLink()
 	initblocks();
 	weather();
 	date();
