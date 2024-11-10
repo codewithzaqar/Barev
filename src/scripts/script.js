@@ -1,5 +1,3 @@
-
-
 function clock() {
 	
 	function checkTime(i) {
@@ -15,6 +13,11 @@ function clock() {
 	$('#clock').text(h + ":" + m);
 	var t = setTimeout(clock, 999);
 }
+
+
+
+
+
 
 
 
@@ -39,6 +42,13 @@ function greetings() {
 
 	$('.greetings').append(m);
 }
+
+
+
+
+
+
+
 
 
 
@@ -86,7 +96,7 @@ function appendblock(title, url, index) {
 
 	var googleIconUrl = "https://www.google.com/s2/favicons?domain=" + getdomainroot(url);
 
-	var b = "<div class='block'><a href='" + url + "'><img class='l_icon' src='" + googleIconUrl + "'><p>" + title + "</p></a><button class='remove' onclick='removeblock(" + index + ")'>&times;</button><div>";
+	var b = "<div class='block'><a href='" + url + "'><img class='l_icon' src='" + googleIconUrl + "'><p>" + title + "</p></a><button class='remove'>&times;</button><div>";
 
 	$(".linkblocks").append(b);
 }
@@ -108,26 +118,65 @@ function initblocks() {
 	}
 }
 
-//նախ հանեք բլոկը ըստ իր ինդեքսի (n-րդ երեխան, եթե կա 1-ից ավելի բլոկ)
-//ապա տեղադրեք պահեստը բլոկի ինդեքսում
-//և զրոյացնում է բլոկները
-function removeblock(index) {
 
-	var links = storage("get");
-	var selec;
 
-	(links.length <= 1 ? selec = ".linkblocks:nth-child(" + index + ")" : ".linkblocks:first-child")
-	$(selec).remove();
 
+
+
+//ցուցադրում է հղումը ջնջելու կոճակը
+function showRemoveLink() {
 	
 
-	links.pop(index);
-	localStorage.links = JSON.stringify(links);
+	var remTimeout;
+	var canRemove = false
+
+	//մենք օգտագործում ենք document.load-ից հետո ավելացված dom-ի համար
+	$(".linkblocks").on("mouseenter", ".block", function(e) {
+
+		remTimeout = setTimeout(function() {
+			//console.log(e.currentTarget.children[1]);
+			e.currentTarget.children[1].setAttribute("style", "opacity: 1")
+			canRemove = true;
+		}, 500)
+	})
+
+
+	$(".linkblocks").on("mouseleave", ".block", function(e) {
+		clearTimeout(remTimeout)
+		e.currentTarget.children[1].setAttribute("style", "opacity: 0")
+		canRemove = false
+	})
 
 
 
-	initblocks();
+
+	function removeblock(i) {
+
+		//հեռացնել html-ը բլոկից
+		$(".linkblocks")[0].children[i].remove()
+
+		//կտրել 2-ի և միացնել առանց կապի հեռացնելու
+		function ejectIntruder(arr) {
+			var temp0 = arr.slice(i + 1)
+			var temp1 = links.slice(0, i)
+            
+			return temp1.concat(temp0)
+		}
+
+		var links = storage("get")
+		localStorage.links = JSON.stringify(ejectIntruder(links))
+	}
+
+
+	//վերցնում է սեղմված .remove-ի ծնողի ինդեքսը
+	$(".linkblocks").on("click", ".remove", function() {
+
+		var index = $(".block").index(this.parentElement)
+		(canRemove ? removeblock(index) : "")
+	})
 }
+
+
 
 //երբ մենք հղում ենք ավելացնում
 //կցել բլոկի վերնագրով, url-ով ԵՎ ինդեքսով
@@ -146,6 +195,13 @@ $(".submitlink").click(function() {
 });
 
 
+
+
+
+
+
+
+
 function date() {
 	var d = new Date();
 	d.getDay();
@@ -156,6 +212,16 @@ function date() {
 	//ամսաթիվը սահմանում է ինդեքսը օրերի և ամիսների ցանկում՝ այն ամբողջությամբ ցուցադրելու համար
 	$(".date span").text(days[d.getDay()] + " " + d.getDate() + " " + months[d.getMonth()]);
 }
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -316,26 +382,68 @@ function weather() {
 }
 
 
-//ցուցադրում է հղումը ջնջելու կոճակը
-function showRemoveLink() {
 
-	var remTimeout;
 
-	//մենք օգտագործում ենք document.load-ից հետո ավելացված dom-ի համար
-	$(".linkblocks").on("mouseenter", ".block", function(e) {
 
-		remTimeout = setTimeout(function() {
-			console.log(e.currentTarget.children[1])
-			e.currentTarget.children[1].setAttribute("style", "display: block")
-		}, 500)
-	})
 
-	$(".linkblocks").on("mouseleave", ".block", function(e) {
+//մատուցել պատկերը մեր տեսադաշտում
+function renderImage(file) {
 
-		clearTimeout(remTimeout)
-		e.currentTarget.children[1].setAttribute("style", "display: none");
-	});
+	//ստեղծել նոր FileReader օբյեկտ
+	var reader = new FileReader()
+
+	//ներդիր պատկեր src url-ով
+	reader.onload = function(event) {
+		url = event.target.result
+		localStorage.background = url
+		$(".change_background .bg_preview").attr("src", url)
+		$(".background").css("background-image", "url(" + localStorage.background + ")")
+	}
+
+	//երբ ֆայլը կարդացվում է, այն գործարկում է վերևի բեռնման իրադարձությունը:
+	renderImage.readAsDataURL(file)
 }
+
+
+function initBackground() {
+
+	var ls = localStorage.background
+
+	if (ls) {
+		$(".change_background .bg_preview").attr("src", )
+		$(".background").css("background-image", "url(" + ls + ")")
+
+		bg_blur(localStorage.background_blur)
+
+	} else {
+		$(".change_background .bg_preview").attr("src", "src/images/background.jpg")
+		$(".background").css("background-image", 'url("src/"images/background.jpg")')
+	}
+}
+
+function bg_blur(val) {
+	$(".background").css("filter", "blur(" + val + "px)")
+	localStorage.background_blur = val
+}
+
+
+
+//կարգավորել մուտքային փոփոխությունները
+$(".change_background input[name='background_file']").change(function() {
+
+	renderImage(this.files[0])
+})
+
+//կարգավորել մուտքային փոփոխությունները
+$(".change_background input[name='background_blur']").change(function() {
+
+	bg_blur(this.value)
+})
+
+
+
+
+
 
 
 //ցուցադրման կարգավորումներ (ժամանակավոր)
@@ -349,6 +457,7 @@ $(".showSettings button").click(function() {
 
 $(document).ready(function() {
 
+	initBackground()
 	showRemoveLink()
 	initblocks();
 	weather();
