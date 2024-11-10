@@ -52,10 +52,10 @@ function greetings() {
 
 
 
-//հիմնական տեղական Պահպանման բեռնաթափում
-//get վերադարձնում է վերլուծված LS-ը
-//save հրում օբյեկտը ցանկում պահելու համար
-//հեռացնելը այլ ֆունկցիայի մեջ է (դե ես չգիտեմ)
+
+
+
+
 function storage(state, title, url) {
 	if (state === "get") {
 
@@ -85,7 +85,7 @@ function storage(state, title, url) {
 }
 
 
-//ավելացնում է բլոկի html-ն իր բոլոր արժեքներով և իրադարձություններով
+
 function appendblock(title, url, index) {
 
 	function getdomainroot(url) {
@@ -101,8 +101,8 @@ function appendblock(title, url, index) {
 	$(".linkblocks").append(b);
 }
 
-//սկզբնավորում է բլոկները՝ հիմնված պահեստավորման վրա
-//պարզապես օգտագործեք appendBlock հանգույցը
+
+
 function initblocks() {
 
 	$(".linkblocks").empty();
@@ -123,65 +123,65 @@ function initblocks() {
 
 
 
-//ցուցադրում է հղումը ջնջելու կոճակը
+
 function showRemoveLink() {
-	
+
 
 	var remTimeout;
-	var canRemove = false
+	var canRemove = false;
 
-	//մենք օգտագործում ենք document.load-ից հետո ավելացված dom-ի համար
+	
 	$(".linkblocks").on("mouseenter", ".block", function(e) {
 
 		remTimeout = setTimeout(function() {
-			//console.log(e.currentTarget.children[1]);
-			e.currentTarget.children[1].setAttribute("style", "opacity: 1")
+			
+			e.currentTarget.children[1].setAttribute("style", "opacity: 1");
 			canRemove = true;
-		}, 500)
-	})
-
+		}, 500);
+	});
 
 	$(".linkblocks").on("mouseleave", ".block", function(e) {
-		clearTimeout(remTimeout)
-		e.currentTarget.children[1].setAttribute("style", "opacity: 0")
-		canRemove = false
-	})
+
+		clearTimeout(remTimeout);
+		e.currentTarget.children[1].setAttribute("style", "opacity: 0");
+		canRemove = false;
+	});
 
 
 
 
 	function removeblock(i) {
 
-		//հեռացնել html-ը բլոկից
-		$(".linkblocks")[0].children[i].remove()
-
-		//կտրել 2-ի և միացնել առանց կապի հեռացնելու
+		
+		$(".linkblocks")[0].children[i].remove();
+		
+		
 		function ejectIntruder(arr) {
-			var temp0 = arr.slice(i + 1)
-			var temp1 = links.slice(0, i)
-            
-			return temp1.concat(temp0)
-		}
+			var temp0 = arr.slice(i + 1);
+			var temp1 = links.slice(0, i);
 
-		var links = storage("get")
-		localStorage.links = JSON.stringify(ejectIntruder(links))
+			return temp1.concat(temp0);
+		}
+		
+		var links = storage("get");
+		localStorage.links = JSON.stringify(ejectIntruder(links));
 	}
 
 
-	//վերցնում է սեղմված .remove-ի ծնողի ինդեքսը
+	
 	$(".linkblocks").on("click", ".remove", function() {
-
-		var index = $(".block").index(this.parentElement)
-		(canRemove ? removeblock(index) : "")
-	})
+		
+		var index = $(".block").index(this.parentElement);
+		(canRemove ? removeblock(index) : "");
+	});
 }
 
 
 
-//երբ մենք հղում ենք ավելացնում
-//կցել բլոկի վերնագրով, url-ով ԵՎ ինդեքսով
-//ավելացնել այս տվյալները պահեստում
-//remet a զրոյական les մուտքերը
+
+
+
+
 $(".submitlink").click(function() {
 	var title = $(".addlink input[name='title'").val();
 	var url = $(".addlink input[name='url'").val();
@@ -209,7 +209,7 @@ function date() {
 	var days = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
 	var months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
 
-	//ամսաթիվը սահմանում է ինդեքսը օրերի և ամիսների ցանկում՝ այն ամբողջությամբ ցուցադրելու համար
+	
 	$(".date span").text(days[d.getDay()] + " " + d.getDate() + " " + months[d.getMonth()]);
 }
 
@@ -229,8 +229,8 @@ function date() {
 function weather() {
 
 
-	//եթե արևը ծագում է, վերադարձի օրը
-	//վերադարձը համապատասխանում է օրվա/գիշերային պատկերակների գրացուցակի անվանմանը
+	
+
 	function dayOrNight(sunset, sunrise) {
 		var ss = new Date(sunset * 1000);
 		var sr = new Date(sunrise * 1000);
@@ -244,8 +244,8 @@ function weather() {
 		}
 	}
 
-	//վերցնում է եղանակի id-ը և վերադարձնում նկարագրությունը
-	//համընկնում է պատկերակի անվան հետ (+ .png)
+	
+
 	function imgId(id) {
 		if (id >= 200 && id <= 232) {
 			return "thunderstorm"
@@ -283,14 +283,14 @@ function weather() {
 	function dataHandling(data) {
 
 
-		//նկարագրության և ջերմաստիճանի համար
+		
 
 		var desc = '<span>' + data.weather[0].description + '</span>. It is <span class="w_temp"></span> currently.'
 		$(".w_description").html(desc);
 		$(".w_temp").text(Math.floor(data.main.temp) + '°');
 		
 
-		//պատկերակի համար
+		
 		var dOrN = dayOrNight(data.sys.sunset, data.sys.sunrise);
 		var wId = imgId(data.weather[0].id);
 
@@ -298,10 +298,10 @@ function weather() {
 	}
 
 
-	//Ես նախընտրում եմ մեկուսացնել հարցումը և օգտագործել մեկ այլ ավելի բարձր գործառույթ՝ տվյալները փոփոխելու համար
+	
 	function weatherRequest(city, unit, api) {
 
-		//փոխարկիչ
+		
 		api = '7c541caef5fc7467fc7267e2f75649a9';
 
 		var request_w = new XMLHttpRequest();
@@ -320,7 +320,7 @@ function weather() {
 
 			if (request_w.status >= 200 && request_w.status < 400) {
 
-				//պատասխանն օգտագործվում է ավելի բարձր ֆունկցիայի մեջ
+				
 				dataHandling(data);					
 
 			} else {
@@ -334,8 +334,8 @@ function weather() {
 
 
 
-	//երբ մենք ընդունում ենք նոր քաղաքը
-	//հարցում կատարեք քաղաքի եղանակին և պահպանեք այն
+	
+
 	$(".submitw_city").click(function() {
 		var city = $(".change_weather input[name='city']").val();
 
@@ -343,16 +343,16 @@ function weather() {
 		localStorage.wCity = city;
 	});
 
-	//մենք ընտրում ենք մետրիկ
-	//մետրիկով հարցրեք եղանակը և գրանցեք այն
+	
+
 	$(".submitw_metric").click(function() {
 
 		weatherRequest(localStorage.wCity, "metric");
 		localStorage.wUnit = "metric";
 	});
 
-	//մենք ընտրում ենք կայսերական
-	//req եղանակը կայսերական հետ և փրկում է այն
+	
+
 	$(".submitw_imperial").click(function() {
 
 		weatherRequest(localStorage.wCity, "imperial");
@@ -361,8 +361,8 @@ function weather() {
 
 
 
-	//սկզբնավորվել է Paris + Metric-ում
-	//եթե պահեստը գոյություն ունի, գործարկեք պահեստի հետ
+	
+
 
 	var c = localStorage.wCity;
 	var u = localStorage.wUnit;
@@ -377,7 +377,7 @@ function weather() {
 		weatherRequest(c, u);
 	}
 
-	//ցուցադրում է քաղաքը քաղաքի մուտքագրման մեջ
+	
 	$(".change_weather input[name='city']").val(localStorage.wCity);
 }
 
@@ -386,59 +386,59 @@ function weather() {
 
 
 
-//մատուցել պատկերը մեր տեսադաշտում
+
 function renderImage(file) {
 
-	//ստեղծել նոր FileReader օբյեկտ
-	var reader = new FileReader()
+	
+	var reader = new FileReader();
 
-	//ներդիր պատկեր src url-ով
+	
 	reader.onload = function(event) {
 		url = event.target.result
-		localStorage.background = url
-		$(".change_background .bg_preview").attr("src", url)
-		$(".background").css("background-image", "url(" + localStorage.background + ")")
+		localStorage.background = url;
+		$('.change_background .bg_preview').attr("src", url);
+		$('.background').css("background-image", 'url(' + localStorage.background + ')');
 	}
 
-	//երբ ֆայլը կարդացվում է, այն գործարկում է վերևի բեռնման իրադարձությունը:
-	renderImage.readAsDataURL(file)
+	
+	reader.readAsDataURL(file);
 }
 
 
 function initBackground() {
 
-	var ls = localStorage.background
+	var ls = localStorage.background;
 
 	if (ls) {
-		$(".change_background .bg_preview").attr("src", )
-		$(".background").css("background-image", "url(" + ls + ")")
+		$('.change_background .bg_preview').attr("src", );
+		$('.background').css("background-image", 'url(' + ls + ')');
 
-		bg_blur(localStorage.background_blur)
-
+		bg_blur(localStorage.background_blur);
+		
 	} else {
-		$(".change_background .bg_preview").attr("src", "src/images/background.jpg")
-		$(".background").css("background-image", 'url("src/"images/background.jpg")')
+		$('.change_background .bg_preview').attr("src", "src/images/background.jpg");
+		$('.background').css("background-image", 'url("src/images/background.jpg")');
 	}
 }
 
 function bg_blur(val) {
-	$(".background").css("filter", "blur(" + val + "px)")
-	localStorage.background_blur = val
+	$('.background').css("filter", 'blur(' + val + 'px)');
+	localStorage.background_blur = val;
 }
 
 
 
-//կարգավորել մուտքային փոփոխությունները
+
 $(".change_background input[name='background_file']").change(function() {
 
-	renderImage(this.files[0])
-})
+	renderImage(this.files[0]);
+});
 
-//կարգավորել մուտքային փոփոխությունները
+
 $(".change_background input[name='background_blur']").change(function() {
 
-	bg_blur(this.value)
-})
+	bg_blur(this.value);
+});
 
 
 
@@ -446,7 +446,7 @@ $(".change_background input[name='background_blur']").change(function() {
 
 
 
-//ցուցադրման կարգավորումներ (ժամանակավոր)
+
 $(".showSettings button").click(function() {
 	$(".settings").toggle();
 });
@@ -456,9 +456,8 @@ $(".showSettings button").click(function() {
 
 
 $(document).ready(function() {
-
-	initBackground()
-	showRemoveLink()
+	initBackground();
+	showRemoveLink();
 	initblocks();
 	weather();
 	date();
