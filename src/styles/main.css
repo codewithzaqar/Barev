@@ -42,8 +42,7 @@ p, h3 {
 .showSettings {
 	text-align: left;
 }
-.showSettings button,
-.settings button {
+.showSettings button {
 	font-size: 1.2em;
 	margin: .5em;
 	padding: .3em;
@@ -53,50 +52,8 @@ p, h3 {
 	color: white;
 	cursor: pointer;
 }
-.showSettings button:hover,
-.settings button:hover {
+.showSettings button:hover {
 	background: rgba(12,12,12,.5);
-}
-.settings {
-	display: none;
-	text-align: left;
-	padding: 1em;
-	position: fixed;
-	left: 2em;
-	background: rgba(22, 22, 22, 0.9) none repeat scroll 0% 0%;
-	border-radius: 4px;
-	z-index: 2;
-}
-.settings h5 {
-	font-size: 1.2em;
-	margin: 1rem 0;
-	text-decoration: underline;
-}
-.settings .change_background .bg_preview {
-	width: 10em;
-	padding: .5em;
-	border: 2px dashed white;
-	border-radius: 4px;
-}
-.settings .change_background div {
-	display: flex;
-	align-items: center;
-}
-.settings .change_background div > * {
-	margin: .5em;
-}
-.settings input {
-	height: 1em;
-	margin: .5em;
-	padding: .5em;
-	background: rgba(240,240,240,.5);
-	border: none;
-	border-radius: 4px;
-}
-.settings .param {
-	display: flex;
-	flex-wrap: wrap;
-	align-items: center;
 }
 #clock {
 	font-size: 6em;
