@@ -11,7 +11,8 @@ function clock() {
 	m = checkTime(m);
 
 	$('#clock').text(h + ":" + m);
-	var t = setTimeout(clock, 999);
+
+	var t = setTimeout(clock, 1000);
 }
 
 
@@ -52,10 +53,10 @@ function greetings() {
 
 
 
-
-
-
-
+//localStorage handling basique
+//get retourne le LS parsed
+//save push le l'objet a sauvegarder dans la liste
+//remove est dans une autre fonction (pk je sais pas)
 function storage(state, title, url) {
 	if (state === "get") {
 
@@ -63,7 +64,8 @@ function storage(state, title, url) {
 			return JSON.parse(localStorage.links);
 		}
 		else {
-			return false;
+			//retourne des sites de base pour faire beau
+			return [["Youtube", "https://youtube.com"], ["Wikipedia", "https://Wikipedia.org"], ["Twitter", "https://twitter.com"], ["Reddit", "https://reddit.com"], ["victor-azevedo.me", "https://victor-azevedo.me"]];
 		}
 		
 	}
@@ -85,12 +87,12 @@ function storage(state, title, url) {
 }
 
 
-
+//rajoute l'html d'un bloc avec toute ses valeurs et events
 function appendblock(title, url, index) {
 
-	function getdomainroot(url) {
+	function getdomainroot(str) {
 		var a = document.createElement('a');
-		a.href = url;
+		a.href = str;
 		return a.hostname;
 	}
 
@@ -101,8 +103,8 @@ function appendblock(title, url, index) {
 	$(".linkblocks").append(b);
 }
 
-
-
+//initialise les blocs en fonction du storage
+//utilise simplement une boucle de appendBlock
 function initblocks() {
 
 	$(".linkblocks").empty();
@@ -123,18 +125,18 @@ function initblocks() {
 
 
 
-
+//affiche le bouton pour suppr le link
 function showRemoveLink() {
 
 
 	var remTimeout;
 	var canRemove = false;
 
-	
+	//utilise on pour le dom rajouté après le document.load
 	$(".linkblocks").on("mouseenter", ".block", function(e) {
 
 		remTimeout = setTimeout(function() {
-			
+			//console.log(e.currentTarget.children[1]);
 			e.currentTarget.children[1].setAttribute("style", "opacity: 1");
 			canRemove = true;
 		}, 500);
@@ -152,10 +154,10 @@ function showRemoveLink() {
 
 	function removeblock(i) {
 
-		
+		//enleve le html du block
 		$(".linkblocks")[0].children[i].remove();
 		
-		
+		//coupe en 2 et concat sans le link a remove
 		function ejectIntruder(arr) {
 			var temp0 = arr.slice(i + 1);
 			var temp1 = links.slice(0, i);
@@ -168,7 +170,7 @@ function showRemoveLink() {
 	}
 
 
-	
+	//prend l'index du parent du .remove clické
 	$(".linkblocks").on("click", ".remove", function() {
 		
 		var index = $(".block").index(this.parentElement);
@@ -176,15 +178,21 @@ function showRemoveLink() {
 	});
 }
 
+function filterUrl(str) {
+	if (str.startsWith("http") || str.startsWith("https")) {
+		return str;
+	} else {
+		return 	"http://" + str;
+	}
+}
 
-
-
-
-
-
+//quand on rajoute un link
+//append avec le titre, l'url ET l'index du bloc
+//rajoute ces données au storage
+//remet a zero les inputs
 $(".submitlink").click(function() {
 	var title = $(".addlink input[name='title'").val();
-	var url = $(".addlink input[name='url'").val();
+	var url = filterUrl($(".addlink input[name='url'").val());
 
 	appendblock(title, url, storage("get").length);
 
@@ -209,7 +217,7 @@ function date() {
 	var days = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
 	var months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
 
-	
+	//la date defini l'index dans la liste des jours et mois pour l'afficher en toute lettres
 	$(".date span").text(days[d.getDay()] + " " + d.getDate() + " " + months[d.getMonth()]);
 }
 
@@ -228,9 +236,13 @@ function date() {
 
 function weather() {
 
+	//init la meteo avant que l'api charge
+	var l = localStorage.wLastState;
+	(l ? dataHandling(JSON.parse(l)) : "");
 
-	
 
+	//si le soleil est levé, renvoi jour
+	//le renvoie correspond au nom du répertoire des icones jour / nuit
 	function dayOrNight(sunset, sunrise) {
 		var ss = new Date(sunset * 1000);
 		var sr = new Date(sunrise * 1000);
@@ -244,8 +256,8 @@ function weather() {
 		}
 	}
 
-	
-
+	//prend l'id de la météo et renvoie une description
+	//correspond au nom de l'icone (+ .png)
 	function imgId(id) {
 		if (id >= 200 && id <= 232) {
 			return "thunderstorm"
@@ -283,25 +295,30 @@ function weather() {
 	function dataHandling(data) {
 
 
-		
+		//pour la description et temperature
 
 		var desc = '<span>' + data.weather[0].description + '</span>. It is <span class="w_temp"></span> currently.'
 		$(".w_description").html(desc);
 		$(".w_temp").text(Math.floor(data.main.temp) + '°');
 		
 
-		
-		var dOrN = dayOrNight(data.sys.sunset, data.sys.sunrise);
-		var wId = imgId(data.weather[0].id);
+		//pour l'icone
+		var d_n = dayOrNight(data.sys.sunset, data.sys.sunrise);
+		var weather_id = imgId(data.weather[0].id);
+ 		var icon_src = "src/icons/weather/" + d_n + "/" + weather_id + ".png";
 
-		$(".w_icon").attr("src", "src/icons/weather/" + dOrN + "/" + wId + ".png");
+		$(".w_icon").attr("src", icon_src);
+
+
+		//sauvegarde la derniere meteo
+		localStorage.wLastState = JSON.stringify(data);
 	}
 
 
-	
+	//Je préfère isoler la request et utiliser une autre fonction plus haute pour modifier les données
 	function weatherRequest(city, unit, api) {
 
-		
+		//a changer
 		api = '7c541caef5fc7467fc7267e2f75649a9';
 
 		var request_w = new XMLHttpRequest();
@@ -320,7 +337,7 @@ function weather() {
 
 			if (request_w.status >= 200 && request_w.status < 400) {
 
-				
+				//la réponse est utilisé dans la fonction plus haute
 				dataHandling(data);					
 
 			} else {
@@ -334,8 +351,8 @@ function weather() {
 
 
 
-	
-
+	//quand on accepte la nouvelle ville
+	//req la meteo avec la ville et l'enregistre
 	$(".submitw_city").click(function() {
 		var city = $(".change_weather input[name='city']").val();
 
@@ -343,16 +360,16 @@ function weather() {
 		localStorage.wCity = city;
 	});
 
-	
-
+	//on choisi metric
+	//req la meteo avec metric et l'enregistre
 	$(".submitw_metric").click(function() {
 
 		weatherRequest(localStorage.wCity, "metric");
 		localStorage.wUnit = "metric";
 	});
 
-	
-
+	//on choisi imperial
+	//req la meteo avec imperial et l'enregistre
 	$(".submitw_imperial").click(function() {
 
 		weatherRequest(localStorage.wCity, "imperial");
@@ -361,8 +378,8 @@ function weather() {
 
 
 
-	
-
+	//initialise a Paris + Metric
+	//si le storage existe, lance avec le storage
 
 	var c = localStorage.wCity;
 	var u = localStorage.wUnit;
@@ -377,7 +394,7 @@ function weather() {
 		weatherRequest(c, u);
 	}
 
-	
+	//affiche la ville dans l'input de ville
 	$(".change_weather input[name='city']").val(localStorage.wCity);
 }
 
@@ -386,13 +403,13 @@ function weather() {
 
 
 
-
+// render the image in our view
 function renderImage(file) {
 
-	
+	// generate a new FileReader object
 	var reader = new FileReader();
 
-	
+	// inject an image with the src url
 	reader.onload = function(event) {
 		url = event.target.result
 		localStorage.background = url;
@@ -400,7 +417,7 @@ function renderImage(file) {
 		$('.background').css("background-image", 'url(' + localStorage.background + ')');
 	}
 
-	
+	// when the file is read it triggers the onload event above.
 	reader.readAsDataURL(file);
 }
 
@@ -410,7 +427,7 @@ function initBackground() {
 	var ls = localStorage.background;
 
 	if (ls) {
-		$('.change_background .bg_preview').attr("src", );
+		$('.change_background .bg_preview').attr("src", ls);
 		$('.background').css("background-image", 'url(' + ls + ')');
 
 		bg_blur(localStorage.background_blur);
@@ -428,13 +445,13 @@ function bg_blur(val) {
 
 
 
-
+// handle input changes
 $(".change_background input[name='background_file']").change(function() {
 
 	renderImage(this.files[0]);
 });
 
-
+// handle input changes
 $(".change_background input[name='background_blur']").change(function() {
 
 	bg_blur(this.value);
@@ -446,7 +463,7 @@ $(".change_background input[name='background_blur']").change(function() {
 
 
 
-
+//affiche les settings (temporaire)
 $(".showSettings button").click(function() {
 	$(".settings").toggle();
 });
