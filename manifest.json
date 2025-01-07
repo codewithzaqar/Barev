@@ -1,0 +1,19 @@
+{
+    "manifest_version": 2,
+    "name": "Barev Extension",
+    "version": "0.1",
+    "description": "A simple browser extension that greets you with 'Bonjourr!'",
+    "icons": {
+      "16": "icons/barev-16.png",
+      "48": "icons/barev-48.png",
+      "128": "icons/barev-512.png"
+    },
+    "browser_action": {
+      "default_popup": "popup.html",
+      "default_icon": "icons/barev-48.png"
+    },
+    "permissions": [
+      "activeTab"
+    ]
+  }
+  
