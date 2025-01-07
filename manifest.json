@@ -10,10 +10,15 @@
     },
     "browser_action": {
       "default_popup": "popup.html",
-      "default_icon": "icons/barev-48.png"
+      "default_icon": {
+        "16": "icons/barev-16.png",
+        "48": "icons/barev-48.png",
+        "512": "icons/barev-512.png"
+      }
     },
-    "permissions": [
-      "activeTab"
-    ]
+    "background": {
+      "scripts": ["background.js"],
+      "persistent": false
+    }
   }
   
